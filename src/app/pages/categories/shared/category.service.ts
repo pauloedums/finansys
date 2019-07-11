@@ -10,7 +10,7 @@ import { map, catchError, flatMap } from 'rxjs/operators';
 })
 export class CategoryService {
 
-  private apiPath = 'api/categories';
+  private apiPath: string = 'api/categories';
 
   constructor(private http: HttpClient) {}
 
