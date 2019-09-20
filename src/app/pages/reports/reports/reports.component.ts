@@ -39,16 +39,16 @@ export class ReportsComponent implements OnInit {
 
   @ViewChild('month') month: ElementRef = null;
   @ViewChild('year') year: ElementRef = null;
-   
+
 
   constructor(
     private entryService: EntryService, 
     private categoryService: CategoryService,
   ) { }
 
-  ngOnInit() {  
+  ngOnInit() {
     this.categoryService.getAll()
-      .subscribe(categories => this.categories = categories)
+      .subscribe(categoriesNew => this.categories = categoriesNew);
   }
 
   generateReports() {
@@ -84,13 +84,12 @@ export class ReportsComponent implements OnInit {
     this.expenseTotal = currencyFormatter.format(expenseTotal, { code: 'BRL' });
     this.revenueTotal = currencyFormatter.format(revenueTotal, { code: 'BRL' });
     this.balance = currencyFormatter.format(revenueTotal - expenseTotal, { code: 'BRL'});
+
   }
 
   private setChartData() {
     this.revenueChartData = this.getChartData('revenue', 'Gráfico de Receitas', '#9CCC65');
     this.expenseChartData = this.getChartData('expense', 'Gráfico de Despesas', '#e03131');
-
-    console.log(this.revenueChartData);
   }
 
   private getChartData(entryType: string, title: string, color: string) {
@@ -98,20 +97,24 @@ export class ReportsComponent implements OnInit {
 
     this.categories.forEach(category => {
       const filteredEntries = this.entries.filter(
-        entry => (entry.categoryId == category.id) && (entry.type == entryType)
+        entry => (entry.categoryId === category.id) && (entry.type === entryType)
       );
 
-      if(filteredEntries.length > 0) {
+      if (filteredEntries.length > 0) {
         const totalAmountFiltered = filteredEntries.reduce(
-          (total, entry) => total + currencyFormatter.unformat(entry.amount, {code: 'BRL'}, 0
-          )
-        )
+          (total, entry) => total + currencyFormatter.unformat(entry.amount, {code: 'BRL'}), 0
+        );
+
+        console.log(totalAmountFiltered);
         chartData.push({
           categoryName: category.name,
           totalAmount: totalAmountFiltered
         });
       }
     });
+
+    console.log(chartData);
+
     return {
       labels: chartData.map( item => item.categoryName ),
       datasets: [{
